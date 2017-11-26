@@ -8,29 +8,29 @@ class spectrumObject:
 		self.wavelengths = []
 		self.flux = []
 		self.fluxErrors = []
-		self.length = 0 
+		self.length = 0
 		self.wavelengthRange = (0, 0)
 		self.name = 'unknown'
 		self.loadedFromFilename = 'unknown'
 		self.wavelengthUnits = 'unknown'
 		self.fluxUnits = 'unknown'
 		self.objectName = 'unknown'
-		
+
 	def getProperty(self, property):
 		try:
 			data = getattr(self, property)
 			return data
 		except AttributeError:
 			return None
-		  
-		
+
+
 	def setData(self, wavelengths, flux, errors = None):
 		if len(wavelengths) != len(flux):
 			return -1
 		self.wavelengths = []
 		self.flux = []
 		self.fluxErrors = []
-		
+
 		if errors == None:
 			for w, f in zip(wavelengths, flux):
 				self.wavelengths.append(w)
@@ -40,13 +40,11 @@ class spectrumObject:
 				self.wavelengths.append(w)
 				self.flux.append(f)
 				self.fluxErrors.append(e)
-		
+
 		self.length = len(wavelengths)
 		self.wavelengthRange = (min(wavelengths), max(wavelengths))
-		
+
 		return self.length
-		
-		
 		
 	def sortData(self):
 		wavelengths = self.wavelengths
@@ -71,14 +69,14 @@ class spectrumObject:
 		for w, f in zip(self.wavelengths, self.flux):
 			outputfile.write("%f, %f\n"%(w, f))
 		outputfile.close()
-		
+
 	def snipWavelengthRange(self, lower, upper):
 		""" Removes a section from the spectrum """
 		newWavelengths = []
 		newFlux = []
 		newFluxErrors = []
 		if lower>=upper: return self.length
-			
+
 		for w, f, fe in zip(self.wavelengths, self.flux, self.fluxErrors):
 			if (w<lower) or (w>upper):
 				newWavelengths.append(w)
@@ -89,16 +87,16 @@ class spectrumObject:
 		self.flux = newFlux
 		self.fluxErrors = newFluxErrors
 		self.wavelengthRange = (min(self.wavelengths), max(self.wavelengths))
-			
-		return self.length		
-	
+
+		return self.length
+
 	def integrate(self, wavelengthrange = (-1, -1)):
 		""" Integrates under the spectrum between two wavelength limits. Defaults to all of the spectrum """
 		if wavelengthrange[0]!=-1:
 			wavelengths, fluxes = self.getSubsetByWavelength(wavelengthrange[0], wavelengthrange[1])
-		else: 
+		else:
 			wavelengths, fluxes = (self.wavelengths, self.flux)
-		
+
 		total = scipy.integrate.simps(fluxes, wavelengths)
 		return total
 
@@ -108,7 +106,7 @@ class spectrumObject:
 		for w, f in zip(self.wavelengths, self.flux):
 			newFlux.append(f / constant)
 		self.flux = newFlux
-		return 
+		return
 
 	def subtractSpectrum(self, subtractSpectrum):
 		if len(self.wavelengths)!=len(subtractSpectrum.wavelengths):
@@ -121,14 +119,14 @@ class spectrumObject:
 			newFlux.append(f)
 		self.flux = newFlux
 		return
-		
+
 	def trimWavelengthRange(self, lower, upper):
-		""" Trims out the lower and upper portions of the spectrum """ 
+		""" Trims out the lower and upper portions of the spectrum """
 		newWavelengths = []
 		newFlux = []
 		newFluxErrors = []
 		if lower>=upper: return self.length
-		
+
 		for w, f, fe in zip(self.wavelengths, self.flux, self.fluxErrors):
 			if (w>lower) and (w<upper):
 				newWavelengths.append(w)
@@ -139,22 +137,22 @@ class spectrumObject:
 		self.flux = newFlux
 		self.fluxErrors = newFluxErrors
 		self.wavelengthRange = (min(self.wavelengths), max(self.wavelengths))
-			
-		return self.length		
-		
+
+		return self.length
+
 	def getWavelengths(self):
 		return self.wavelengths
-		
+
 	def convertFluxes(self):
 		print("Current fluxUnits are:", self.fluxUnits)
 		print("Converting from mJy to **INCOMPLETE method**")
-		
+
 	def getFlux(self):
 		return self.flux
-		
+
 	def getErrors(self):
 		return self.fluxErrors
-		
+
 	def getNearestFlux(self, wavelength):
 		minDistance = self.wavelengthRange[1]
 		for w, f in zip (self.wavelengths, self.flux):
@@ -163,7 +161,7 @@ class spectrumObject:
 				minDistance = distance
 				result = f
 		return result
-		
+
 	def getSubsetByWavelength(self, lower, upper):
 		newWavelengths = []
 		newFlux = []
@@ -185,11 +183,11 @@ class spectrumObject:
 			if type(data)==list:
 				data = numpy.array(data).tolist()
 			object[key] = data
-			
+
 		outputfile = open(filename, 'w')
 		json.dump(object, outputfile)
 		outputfile.close()
-	
+
 	def loadFromJSON(self, filename):
 		inputfile = open(filename, "r")
 		jsonObject = json.load(inputfile)
@@ -201,22 +199,22 @@ class spectrumObject:
 			setattr(self, key, value)
 		inputfile.close()
 		self.loadedFromFilename = filename
-		
+
 	def loadFromSLOAN(self, filename):
 		inputfile = open(filename, "rt")
 		print("SDSS filename is:", filename)
 		self.objectName = filename[:23]
 		print("Target name is:", self.objectName)
-		
+
 		for line in inputfile:
 			fields = line.strip().split()
 			self.wavelengths.append(float(fields[0]))
 			self.flux.append(float(fields[1]))
 			self.fluxErrors.append(float(fields[2]))
-			
-		inputfile.close() 
-		
-		
+
+		inputfile.close()
+
+
 	def parseHeaderInfo(self, headers):
 		self.objectName = headers['Object']
 		self.telescope = headers['Telescope']
@@ -241,10 +239,10 @@ class spectrumObject:
 		self.galLongitude = headers['Gal longitude']
 		self.extractPosition = headers['Extract position']
 		# self.comment = str(headers['COMMENT'])
-		
+
 		return self.objectName
 
-	
+
 	def appendDataAtNewWavelengths(self, wavelengths, flux):
 		currentWavelengthRange = self.wavelengthRange
 		newWavelengthsRange = (min(wavelengths), max(wavelengths))
@@ -259,24 +257,24 @@ class spectrumObject:
 				if w>startWavelength:
 					self.wavelengths.append(w)
 					self.flux.append(f)
-					
+
 		self.length = len(self.wavelengths)
 		self.wavelengthRange = (min(wavelengths), max(wavelengths))
-		
+
 		return self.length
-		
+
 	def appendNewData(self, newSpectrum):
 		print("HJD of existing spectrum: %7.7f\nHJD of spectrum to be added: %7.7f"%(self.HJD, newSpectrum.HJD))
 		timeDifferenceSeconds = 86400. * (self.HJD - newSpectrum.HJD)
 		print("Time difference is %f seconds."%timeDifferenceSeconds)
-		
+
 		currentWavelengthRange = self.wavelengthRange
 		wavelengths = newSpectrum.getWavelengths()
 		flux = newSpectrum.getFlux()
 		newWavelengthsRange = (min(wavelengths), max(wavelengths))
 		print("Current wavelength range:", currentWavelengthRange)
 		print("New data wavelength range:", newWavelengthsRange)
-		
+
 		# Append data at the end of the current data
 		if currentWavelengthRange[0] < newWavelengthsRange[0]:
 			if currentWavelengthRange[1] > newWavelengthsRange[0]:
@@ -288,7 +286,7 @@ class spectrumObject:
 					if w>startWavelength:
 						self.wavelengths.append(w)
 						self.flux.append(f)
-						
+
 		# Add new data to the beginning of the old data
 		if currentWavelengthRange[0] > newWavelengthsRange[0]:
 			if currentWavelengthRange[1] > newWavelengthsRange[0]:
@@ -307,10 +305,9 @@ class spectrumObject:
 					newFlux.append(f)
 			self.wavelengths = newWavelengths
 			self.flux = newFlux
-		
-						
+
+
 		self.length = len(self.wavelengths)
 		self.wavelengthRange = (min(wavelengths), max(wavelengths))
-		
-		return self.wavelengthRange
 
+		return self.wavelengthRange
