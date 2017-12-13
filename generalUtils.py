@@ -3,7 +3,7 @@ from PIL import Image,ImageDraw,ImageFont
 
 def setMatplotlibDefaults():
 	import matplotlib
-	
+
 	matplotlib.rc('font',**{'family':'sans-serif','sans-serif':['Helvetica']})
 	## for Palatino and other serif fonts use:
 	matplotlib.rc('font',**{'family':'serif','serif':['Palatino']})
@@ -14,7 +14,7 @@ def setMatplotlibDefaults():
 			}
 	matplotlib.rcParams.update(params)
 
-	
+
 
 
 def query_yes_no(question, default="yes"):
@@ -49,3 +49,13 @@ def query_yes_no(question, default="yes"):
             sys.stdout.write("Please respond with 'yes' or 'no' "
                              "(or 'y' or 'n').\n")
 
+
+class bcolors:
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'

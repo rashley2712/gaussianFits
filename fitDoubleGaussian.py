@@ -12,6 +12,9 @@ class rvdata:
 	def setFilename(self, filename):
 		self.filename = filename
 
+	def sort(self):
+		self.rvs = sorted(self.rvs, key=lambda k: k['HJD'])
+
 	def addData(self, data):
 		self.rvs.append(data)
 
@@ -280,5 +283,6 @@ if __name__ == "__main__":
 					'good': goodFit }
 		rvInfo.addData(saveRV)
 		rvInfo.setFilename(s.objectName)
+		rvInfo.sort()
 		rvInfo.saveDataTSV()
 		rvInfo.saveData()
