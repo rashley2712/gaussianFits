@@ -121,6 +121,11 @@ if __name__ == "__main__":
 	plotHeight = plotWidth/1.62
 	fitZoom = matplotlib.pyplot.figure(figsize=(plotWidth, plotHeight))
 	fitZoom.canvas.set_window_title('Fit')
+	velocity = 0
+	velocityError = 0
+	wavelength = 0
+	wavelengthError = 0
+	reducedChiSq = 0
 	for s in spectra:
 		wavelengthGuess = config.blueRestWavelength
 		repeatFit = True
@@ -274,7 +279,6 @@ if __name__ == "__main__":
 			matplotlib.pyplot.clf()
 			matplotlib.pyplot.figure(fitZoom.number)
 			matplotlib.pyplot.clf()
-
 
 		saveRV = { 'HJD': s.HJD,
 					'vel': velocity, 'velError': velocityError,
