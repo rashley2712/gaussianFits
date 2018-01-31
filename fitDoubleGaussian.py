@@ -110,6 +110,7 @@ if __name__ == "__main__":
 	# Trim out the important region of the spectrum
 	print("Discarding all info outside of the range %f to %f Angstroms."%(config.lowerWavelength, config.upperWavelength))
 	for s in spectra:
+		print(s.HJD)
 		s.trimWavelengthRange(config.lowerWavelength, config.upperWavelength)
 
 	rvInfo = rvdata()
